@@ -18,6 +18,7 @@
 #include <zephyr/drivers/spi.h>
 #include "util/peripherals/imu/IMU.h"
 #include <cstdint>
+#include <cstddef>
 
 /**
  * @class ISM330

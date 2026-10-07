@@ -2,6 +2,7 @@
 #include "zephyr/drivers/spi.h"
 #include <cmath>
 #include <cstdint>
+#include <cstddef>
 #include <util/algorithms/general_functions.h>
 
 // Scale factors for calculations 
