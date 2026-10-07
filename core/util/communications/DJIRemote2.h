@@ -5,6 +5,8 @@
 #include <zephyr/drivers/uart.h>
 #include <cstdint>
 #include <cstddef>
+// #include <util/communications/mbedSerial.h>
+#include <util/communications/DMAUart.h>
 
 struct VTMInput {
     uint16_t ch0 = 1024;
@@ -145,10 +147,13 @@ public:
 	float apply_deadzone(float value) const;
 	float getDialValue() const;
 	ModeSwitch getMode() const;
+    
+    void printMissedPackets();
 
 private:
     const struct device *uart_;
     // BufferedSerial serial_;
+    DMAUart serial_;
 
     uint8_t streamBuffer_[STREAM_BUFFER_SIZE];
     size_t streamCount_;

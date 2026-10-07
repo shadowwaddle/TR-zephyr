@@ -65,6 +65,9 @@ private:
     struct k_thread m_read_tdata;
     struct k_thread m_write_tdata;
 
+    volatile uint32_t last_rx_ms = 0; // Used to log when our last successful read was 
+
+
     bool enablePrintRefData = 0;
 
     uint8_t JudgeSystem_rxBuff_priv[JUDGESYSTEM_PACKSIZE];

@@ -89,9 +89,6 @@ class BaseRobot {
           referee_(config.referee_uart_dev, config.referee_usart_type), 
           canHandler1_(config.can1_dev),
           canHandler2_(config.can2_dev),
-        //   led0_(config.led0_pin),
-        //   led1_(config.led1_pin),
-        //   led2_(config.led2_pin)
          led0_(*config.led0_dev),
          led1_(*config.led1_dev),
          led2_(*config.led2_dev)
@@ -126,6 +123,11 @@ class BaseRobot {
 
         DJIMotor::setCanHandlers();
 
+        CANHandler *can1 = DJIMotor::getCanHandler(CANHandler::CANBUS_1);
+        CANHandler *can2 = DJIMotor::getCanHandler(CANHandler::CANBUS_2);
+        if (can1) can1->registerCallback(0x201, 0x20D, DJIMotor::getCanOneFeedback);
+        if (can2) can2->registerCallback(0x201, 0x20D, DJIMotor::getCanTwoFeedback);
+
         init();
 
         while (true) {
@@ -151,8 +153,12 @@ class BaseRobot {
             // Add sensors updates in your end of loop
             end_of_loop();
 
-            canHandler1_.readAllCan();
-            canHandler2_.readAllCan();
+            // canHandler1_.readAllCan();
+            // canHandler2_.readAllCan();
+            if (can1) can1->readAllCan();
+            if (can2) can2->readAllCan();
+
+            k_sleep(K_MSEC(10));
         }
     }
 
@@ -193,11 +199,12 @@ class BaseRobot {
 
         myaw = remote_.getMouseX();
         mpitch = remote_.getMouseY();
+        // redundant since applydeadzone does this anyway
+        // jx = (fabs(jx) < tolerance) ? 0 : jx;
+        // jy = (fabs(jy) < tolerance) ? 0 : jy;
+        // jpitch = (fabs(jpitch) < tolerance) ? 0 : jpitch;
+        // jyaw = (fabs(jyaw) < tolerance) ? 0 : jyaw;
 
-        jx = (fabs(jx) < tolerance) ? 0 : jx;
-        jy = (fabs(jy) < tolerance) ? 0 : jy;
-        jpitch = (fabs(jpitch) < tolerance) ? 0 : jpitch;
-        jyaw = (fabs(jyaw) < tolerance) ? 0 : jyaw;
         
 
         // Shift to make robot go slower
@@ -211,33 +218,33 @@ class BaseRobot {
         jx += mult * ((remote_.keyPressed(DJIRemote2::Key::D) ? -1 : 0) + (remote_.keyPressed(DJIRemote2::Key::A) ? 1 : 0));
         jy += mult * ((remote_.keyPressed(DJIRemote2::Key::W) ? 1 : 0) + (remote_.keyPressed(DJIRemote2::Key::S) ? -1 : 0));
 
-        float j_hypo = sqrt(jx * jx + jy * jy);
-        if(j_hypo > 1.0){
+        float j_hypo = sqrtf(jx * jx + jy * jy);
+        if(j_hypo > 1.0f){
             jx = jx / j_hypo;
             jy = jy / j_hypo;
         }
         //Bounding the four j variables
-        jx = fmax(-1.0F, fmin(1.0F, jx));
-        jy = fmax(-1.0F, fmin(1.0F, jy));
-        jpitch = fmax(-1.0F, fmin(1.0F, jpitch));
-        jyaw = fmax(-1.0F, fmin(1.0F, jyaw));
+        jx = fmaxf(-1.0F, fminf(1.0f, jx));
+        jy = fmaxf(-1.0F, fminf(1.0f, jy));
+        jpitch = fmaxf(-1.0F, fminf(1.0f, jpitch));
+        jyaw = fmaxf(-1.0F, fminf(1.0f, jyaw));
 
         // max_linear_vel = -1.24 + 0.0513 * chassis.power_limit + -0.000216 * (chassis.power_limit * chassis.power_limit);
         // float max_omega = 0.326 + 0.0857 * chassis_power_limit + -0.000183 * (chassis_power_limit * chassis_power_limit);
-        float max_omega = 4.8;
+        float max_omega = 4.8f;
 
         if(remote_.keyPressed(DJIRemote2::Key::CTRL)){
-            jx = 0.0;
-            jy = 0.0;
-            max_omega = 6.1;
+            jx = 0.0f;
+            jy = 0.0f;
+            max_omega = 6.1f;
         }
 
         float linear_hypo = sqrtf(jx * jx + jy * jy);
-        if(linear_hypo > 0.8){
-            linear_hypo = 0.8;
+        if(linear_hypo > 0.8f){
+            linear_hypo = 0.8f;
         }
 
-        float available_beyblade = 1.0 - linear_hypo;
+        float available_beyblade = 1.0f - linear_hypo;
         omega_speed = max_omega * available_beyblade;
     }
 };

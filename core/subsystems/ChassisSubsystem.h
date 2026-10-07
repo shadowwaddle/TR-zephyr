@@ -15,30 +15,30 @@
 #define CAN_BUS_TYPE CANHandler::CANBUS_1
 #define MOTOR_TYPE M3508
 #define M3508_POST_MAX_RPM 469
-#define INPUT_THRESHOLD 0.01
+#define INPUT_THRESHOLD 0.01f
 #define SECONDS_PER_MINUTE 60
-#define TICKS_PER_ROTATION 8192.0
-#define WHEEL_DIAMETER_METERS 0.146
-#define WHEEL_TO_CHASSIS_CENTER_LX 0.21
-#define WHEEL_TO_CHASSIS_CENTER_LY 0.14
+#define TICKS_PER_ROTATION 8192.0f
+#define WHEEL_DIAMETER_METERS 0.146f
+#define WHEEL_TO_CHASSIS_CENTER_LX 0.21f
+#define WHEEL_TO_CHASSIS_CENTER_LY 0.14f
 
 #define MAX_BEYBLADE_SPEED 1800
-#define BEYBLADE_ACCELERATION 0.05
-#define MAX_VEL 2.92
+#define BEYBLADE_ACCELERATION 0.05f
+#define MAX_VEL 2.92f
 
 struct OmniKinematics
 {
-    double r1x, r1y, r2x, r2y, r3x, r3y, r4x, r4y;
+    float r1x, r1y, r2x, r2y, r3x, r3y, r4x, r4y;
 };
 
 struct WheelSpeeds
 {
-    double LF;
-    double RF;
-    double LB;
-    double RB;
+    float LF;
+    float RF;
+    float LB;
+    float RB;
 
-    void operator*=(double scalar)
+    void operator*=(float scalar)
     {
         LF *= scalar;
         RF *= scalar;
@@ -49,15 +49,15 @@ struct WheelSpeeds
 
 struct ChassisSpeeds
 {
-    double vX;
-    double vY;
-    double vOmega;
+    float vX;
+    float vY;
+    float vOmega;
 };
 
 struct OmniKinematicsLimits
 {
-    double max_Vel;
-    double max_vOmega;
+    float max_Vel;
+    float max_vOmega;
 };
 
 /**
@@ -76,8 +76,8 @@ public:
         int left_back_can_id;
         int right_back_can_id;
 
-        const double radius;
-        const double speed_pid_ff_ks;
+        const float radius;
+        const float speed_pid_ff_ks;
 
         float yaw_initial_offset_ticks;
         IMU &imu;
@@ -136,11 +136,11 @@ public:
 
     static float limitAcceleration(float desiredRPM, float previousRPM, int power);
 
-    static double p_theory(int LeftFrontPower, int RightFrontPower, int LeftBackPower, int RightBackPower, int LeftFrontRpm, int RightFrontRpm, int LeftBackRpm, int RightBackRpm);
+    static float p_theory(int LeftFrontPower, int RightFrontPower, int LeftBackPower, int RightBackPower, int LeftFrontRpm, int RightFrontRpm, int LeftBackRpm, int RightBackRpm);
 
     float estimatePowerWatts(int torqueCounts);
 
-    static double Bisection(int LeftFrontPower, int RightFrontPower, int LeftBackPower, int RightBackPower, int LeftFrontRpm, int RightFrontRpm, int LeftBackRpm, int RightBackRpm, double chassisPowerLimit);
+    static float Bisection(int LeftFrontPower, int RightFrontPower, int LeftBackPower, int RightBackPower, int LeftFrontRpm, int RightFrontRpm, int LeftBackRpm, int RightBackRpm, float chassisPowerLimit);
 
     float power_limit;
 
@@ -187,7 +187,7 @@ public:
      * @param speeds The relative speeds (vX, vY, and vOmega) in m/s
      * @param yawCurrent The CCW-positive angle in degrees
      */
-    ChassisSpeeds rotateChassisSpeed(ChassisSpeeds speeds, double yawCurrent);
+    ChassisSpeeds rotateChassisSpeed(ChassisSpeeds speeds, float yawCurrent);
 
     /**
      * A helper method to find a DJIMotor object from an index.
@@ -211,14 +211,14 @@ public:
      * @param location The MotorLocation of the motor (LF, RF, LB, RB)
      * @param cap The maximum integral that can be achieved, above which the integral will be capped
      */
-    void setSpeedIntegralCap(MotorLocation location, double cap);
+    void setSpeedIntegralCap(MotorLocation location, float cap);
 
     /**
      * Sets the Feedforward for the SpeedPID
      * @param location The MotorLocation of the motor (LF, RF, LB, RB)
      * @param FF The arbitrary Feedforward value ranges from [-1, 1]
      */
-    void setSpeedFeedforward(MotorLocation location, double FF);
+    void setSpeedFeedforward(MotorLocation location, float FF);
 
 
     /**
@@ -250,14 +250,14 @@ public:
      * @param radians An angle measurement in radians
      * @return The angle converted to degree
      */
-    static double radiansToDegrees(double radians);
+    static float radiansToDegrees(float radians);
 
     /**
      * Helper method to convert an angle from radians to degrees
      * @param degrees An angle measurement in degrees
      * @return The angle converted to radians
      */
-    static double degreesToRadians(double degrees);
+    static float degreesToRadians(float degrees);
 
     /**
      * Gets the IMU's current angle reading in degrees
@@ -273,7 +273,7 @@ public:
      * @param location location of the motor
      * @param unit unit of speed
      */
-    double getMotorSpeed(MotorLocation location, SPEED_UNIT unit);
+    float getMotorSpeed(MotorLocation location, SPEED_UNIT unit);
 
     /**
      * sets chassis speeds limits
@@ -281,7 +281,7 @@ public:
      * @param max_Vel maximum linear velocity of chassis
      * @param max_vOmega maximum angular velocity of chassis
      */
-    void setOmniKinematicsLimits(double max_Vel, double max_vOmega);
+    void setOmniKinematicsLimits(float max_Vel, float max_vOmega);
 
     /**
      * A helper method to read/update the IMU.
@@ -315,8 +315,8 @@ public:
     PID pid_RB;
     
     PID pid_align;
-    double yaw_velo_gain = 0;
-    double yawPrior; // previous yaw for yaw_align
+    float yaw_velo_gain = 0;
+    float yawPrior; // previous yaw for yaw_align
 
     uint32_t lastPIDTime = 0;
 
@@ -324,25 +324,25 @@ public:
     /**
      * yawPhase is an initial offset of your Yaw Motor Angle (basically which direction you want your Heading to be w.r.t Yaw Motor)
     */
-    double yawOdom;
-    double imuOdom;
+    float yawOdom;
+    float imuOdom;
     int testData[300][4];
     int testDataIndex = 0;
 
-    static double radiansToTicks(double radians);
-    static double ticksToRadians(double ticks);
+    static float radiansToTicks(float radians);
+    static float ticksToRadians(float ticks);
     
     // /**
     //  * Gets the yaw position from encoder (PWM) input in degrees (0-360)
     //  * @return yaw position in degrees, or -1 if encoder not available
     //  */
-    // double getEncoderYawPosition();
+    // float getEncoderYawPosition();
 
     // /**
     //  * A helper method to calculate the moving average of the encoder readings for yaw position
     //  * @return the moving average of the encoder readings for yaw position
     //  */
-    // double encoderMovingAverage();
+    // float encoderMovingAverage();
     
     /**
      * Updates yawPhase from the encoder reading
@@ -350,37 +350,37 @@ public:
      */
     void updateYawPhaseFromEncoder();
 
-private:
     DJIMotor LF, RF, LB, RB;
+private:
     DJIMotor *yaw = 0;
     MA4 *encoder = nullptr;
-    double yawPhase;
+    float yawPhase;
     BrakeMode brakeMode;
 
-    // double beybladeSpeed;
+    // float beybladeSpeed;
     // bool beybladeIncreasing;
     IMU &imu;
     IMU::EulerAngles imuAngles;
 
-    static double rpmToRadPerSecond(double RPM);
-    static double radPerSecondToRPM(double radPerSecond);
+    static float rpmToRadPerSecond(float RPM);
+    static float radPerSecondToRPM(float radPerSecond);
 
     OmniKinematics m_OmniKinematics;
     float chassis_radius;
-    void setOmniKinematics(double radius, HOLONOMIC_MODE mode = OMNI);
+    void setOmniKinematics(float radius, HOLONOMIC_MODE mode = OMNI);
     // Eigen::MatrixXd wheelSpeedsToChassisSpeeds(WheelSpeeds wheelSpeeds);
 
-    double FF_Ks;
+    float FF_Ks;
 
-    void setMotorPower(MotorLocation location, double power);
-    void setMotorSpeedRPM(MotorLocation location, double speed);
-    // void setMotorSpeedTicksPerSecond(int index, double speed);
+    void setMotorPower(MotorLocation location, float power);
+    void setMotorSpeedRPM(MotorLocation location, float speed);
+    // void setMotorSpeedTicksPerSecond(int index, float speed);
 
-    double getMotorSpeedRPM(MotorLocation location);
-    int motorPIDtoPower(MotorLocation location, double speed, uint32_t dt);
+    float getMotorSpeedRPM(MotorLocation location);
+    int motorPIDtoPower(MotorLocation location, float speed, uint32_t dt);
 
     // ChassisKalman chassisKalman;
-    double testAngle;
+    float testAngle;
     int lastTimeMs;
 
     unsigned long m_lastTorqueUs = 0;

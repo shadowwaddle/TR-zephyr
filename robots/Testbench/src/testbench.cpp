@@ -33,7 +33,7 @@ int constexpr SWAP_TIME = 1000;
 int curr_time = 0;
 short current_motor_power = 1000;
 
-DJIMotor::config motorConfig = {canbus1_dev, MOTOR_ID, CANHandler::CANBUS_1, M3508};
+DJIMotor::config motorConfig = {canbus1_dev, MOTOR_ID, CANHandler::CANBUS_2, M3508};
 DJIMotor motor(motorConfig);
 
 
@@ -41,7 +41,7 @@ double AG[6];
 
 void periodic() {
 
-    DJIMotor::getCanHandler(CANHandler::CANBUS_1)->readAllCan();
+    DJIMotor::getCanHandler(CANHandler::CANBUS_2)->readAllCan();
 
     if(curr_time > SWAP_TIME) {
         motor.setPower(current_motor_power);

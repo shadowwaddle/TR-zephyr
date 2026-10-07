@@ -51,13 +51,18 @@ DJIMotor::DJIMotor(short motorID, CANHandler::CANBus canBus, motorType type,
         s_allMotors[canBus][can_line][index] = this;
         s_motorsExist[canBus][can_line][index] = true;
 
-    } else {
-        DJIMotor mot(true);
-        s_allMotors[canBus][can_line][index] = &mot;
-        printf("[ERROR] THERES A CONFLICT ON BUS [%d] MOTOR [%d], \"%s\". YOU "
-               "WILL HAVE ERRORS.\n",
-               canBus + 1, motorID + 1, name.c_str());
-    }
+    }else {
+       printf("[ERROR] THERES A CONFLICT ON BUS [%d] MOTOR [%d], \"%s\". YOU "
+              "WILL HAVE ERRORS.\n", canBus + 1, motorID, name.c_str());
+       // do NOT touch s_allMotors here — leave the original valid pointer alone
+   }
+    // } else {
+    //     DJIMotor mot(true);
+    //     s_allMotors[canBus][can_line][index] = &mot;
+    //     printf("[ERROR] THERES A CONFLICT ON BUS [%d] MOTOR [%d], \"%s\". YOU "
+    //            "WILL HAVE ERRORS.\n",
+    //            canBus + 1, motorID + 1, name.c_str());
+    // }
 
     if (motorID > 8 || motorID < 1) {
         printf("[ERROR] The canID [%d] not within correct bounds\n", motorID);
@@ -431,7 +436,7 @@ float DJIMotor::calculateDeltaPhase(float target, float current, float max) {
 
     float deltaPhase = target - current;
 
-    if (fabs(deltaPhase) > max / 2) {
+    if (fabsf(deltaPhase) > max / 2) {
         if (deltaPhase > 0)
             deltaPhase -= max;
 

@@ -25,12 +25,14 @@ constexpr float JOYSTICK_PITCH_SENSITIVITY_DPS = 150;
 constexpr float MOUSE_SENSITIVITY_YAW_DPS = 1.0;
 constexpr float MOUSE_SENSITIVITY_PITCH_DPS = 1.0;
 
-constexpr PID::config YAW_VEL_PID     = {181, 3.655 * 10e-3, 4.51 * 7.5, 32000, 1000};
+// constexpr PID::config YAW_VEL_PID     = {181, 3.655 * 10e-3, 4.51 * 7.5, 32000, 1000};
+constexpr PID::config YAW_VEL_PID     = {181,0,10, 32000, 1000};
 constexpr PID::config YAW_POS_PID     = {1, 0, 0, 45, 2};
 const float yaw_static_friction       = 0;//-150;       // We multiply it by dir
 const float yaw_kinetic_friction      = 0;       // We multiply this by yawvelo
 
-constexpr PID::config PITCH_VEL_PID   = {173.8994, 4.898 * 10e-6, 12.474 * 10e3, 16000, 2000}; //{25, 0.001, 5, 16000, 1000};
+constexpr PID::config PITCH_VEL_PID   = {173.8994f, 4.898f * static_cast<float>(10e-6), 12.474f * static_cast<float>(10e3) * 1.5f, 16000, 2000}; //{25, 0.001, 5, 16000, 1000};
+// constexpr PID::config PITCH_VEL_PID = {170, 0, 1200, 16000,2000}; //{25, 0.001, 5, 16000, 1000};
 constexpr PID::config PITCH_POS_PID   = {1, 0, 0,30,2}; //{1, 0, 0, 30, 2};
 const float pitch_gravity_feedforward = -1200;    // We multiply this by cos(angle)
 const float pitch_static_friction     = 0;       // We multiply it by dir
@@ -56,7 +58,7 @@ const struct device *canbus1_dev = DEVICE_DT_GET(DT_NODELABEL(can1));
 
 const struct device *canbus2_dev = DEVICE_DT_GET(DT_NODELABEL(can2));
 constexpr short yaw_id = 3;
-constexpr short pitch_id = 8;
+constexpr short pitch_id = 5;
 
 const struct gpio_dt_spec led0_dev = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 const struct gpio_dt_spec led1_dev = GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios);
@@ -67,7 +69,8 @@ static const struct i2c_dt_spec imu_spec = I2C_DT_SPEC_GET(DT_NODELABEL(imu));
 
 static const struct pwm_dt_spec encoderSpec = PWM_DT_SPEC_GET(DT_NODELABEL(pwm_encoder_ch));
 static const struct device *controllerUart = DEVICE_DT_GET(DT_NODELABEL(usart1));
-DJIRemote2 controller(controllerUart);
+static const struct device *refUartDev = DEVICE_DT_GET(DT_NODELABEL(usart3));
+// DJIRemote2 controller(controllerUart);
 
 static const struct device *jetsonUart = DEVICE_DT_GET(DT_NODELABEL(uart5));
 
@@ -102,7 +105,7 @@ ShooterSubsystem::config shooter_config = {
     0,
     2,
     4,
-    1,
+    6,
     FLYWHEEL_L_PID,
     FLYWHEEL_R_PID,
     INDEXER_PID_VEL,
@@ -152,9 +155,9 @@ class Infantry : public BaseRobot {
 
         // TODO add passing in individual PID objects for the motors
         chassis_(ChassisSubsystem::Config{
-            1,      // left_front_can_id
-            2,      // right_front_can_id
-            3,      // left_back_can_id
+            5,      // left_front_can_id
+            1,      // right_front_can_id
+            2,      // left_back_can_id
             4,      // right_back_can_id
             0.22617,  // radius
             0.065,    // speed_pid_ff_ks
@@ -173,6 +176,9 @@ class Infantry : public BaseRobot {
 
     void init() override {
         // timer = us_ticker_read();
+            if (!device_is_ready(controllerUart)) {
+    printf("[ERROR] controllerUart (usart1) not ready!\n");
+    }
         imu_.begin(0.9, 0);
     }
 
@@ -194,12 +200,12 @@ class Infantry : public BaseRobot {
         }
 
         // Turret from remote
-        yaw_desired_angle -= myaw * 0.01;
+        yaw_desired_angle -= myaw * 0.01f;
         yaw_desired_angle -= jyaw * JOYSTICK_YAW_SENSITIVITY_DPS * dt_us / 1000000;
         yaw_desired_angle = capAngle(yaw_desired_angle);
         des_turret_state.yaw_angle_degs = yaw_desired_angle;
 
-        pitch_desired_angle -= mpitch * 0.01;
+        pitch_desired_angle -= mpitch * 0.01f;
         pitch_desired_angle -= jpitch * JOYSTICK_PITCH_SENSITIVITY_DPS * dt_us / 1000000;
         pitch_desired_angle = std::clamp(pitch_desired_angle, PITCH_LOWER_BOUND, PITCH_UPPER_BOUND);
         des_turret_state.pitch_angle_degs = pitch_desired_angle;
@@ -250,7 +256,15 @@ class Infantry : public BaseRobot {
         shooter_.setState(des_shoot_state);
 
         turret_.periodic(chassis_.getChassisSpeeds().vOmega * 60 / (2 * PI));
-        chassis_.power_limit = referee_.robot_status.chassis_power_limit;
+
+        float lim = referee_.robot_status.chassis_power_limit;
+
+        if (lim <= 0) {
+            lim = 80;
+        } 
+        chassis_.power_limit = lim;
+        
+        
         chassis_.periodic(&imuAngles);
         shooter_.periodic(referee_.power_heat_data.shooter_17mm_1_barrel_heat,
                          referee_.robot_status.shooter_barrel_heat_limit);
@@ -270,11 +284,16 @@ class Infantry : public BaseRobot {
         // %.2f\n", turret.getState().pitch_angle); printf("%d\n",
         // shooter.getState()); printf("v:%d\n",testmot>>VELOCITY); printf("cx:
         // %.2f\n", remote_.getChassisX()); printf("switch: %d\n",
-        // remote_.getSwitch(Remote::Switch::RIGHT_SWITCH)); printf("imu:
+        // remote_.getSwitch(Remote::Switch::RIGHT_SWITCH));
         // %.2f\n", imu.getImuAngles().yaw);
         // printf("%d\n", referee_.get_game_progress());
         // printf("yp %.2f \n", encoder_.encoderMovingAverage());
-        printf("%.2f, %.2f, %.2f\n", imuAngles.roll, imuAngles.pitch, imuAngles.yaw);
+        // printf("%.2f, %.2f, %.2f\n", imuAngles.roll, imuAngles.pitch, imuAngles.yaw);
+        // printf("remote state: %d\n", remote_.getMode());
+        // printf("remote jx: %.2f, jy: %.2f, jpitch: %.2f, jyaw: %.2f\n", jx, jy, jpitch, jyaw);
+        // remote_.printMissedPackets();
+        // printf("Chassis motor speeds: %.2f, %.2f, %.2f, %.2f\n", chassis_.getMotorSpeed(ChassisSubsystem::LEFT_FRONT, ChassisSubsystem::METER_PER_SECOND), chassis_.getMotorSpeed(ChassisSubsystem::RIGHT_FRONT, ChassisSubsystem::METER_PER_SECOND), chassis_.getMotorSpeed(ChassisSubsystem::LEFT_BACK, ChassisSubsystem::METER_PER_SECOND), chassis_.getMotorSpeed(ChassisSubsystem::RIGHT_BACK, ChassisSubsystem::METER_PER_SECOND));
+        // printf("Chassis speeds: %.2f, %.2f, %.2f, %.2f\n", chassis_.LF.getData(VELOCITY), chassis_.RF.getData(VELOCITY), chassis_.LB.getData(VELOCITY), chassis_.RB.getData(VELOCITY));
     }
 
     void end_of_loop() override {}
@@ -302,11 +321,18 @@ class Infantry : public BaseRobot {
 int main(void)
 {
     printf("HELLO\n");
+    
+    // I'm sure there's a cleaner way to do this but for now it's getting set in main
     BaseRobot::Config config = BaseRobot::Config{};
     config.led0_dev = &led0_dev;
     config.led1_dev = &led1_dev;
     config.led2_dev = &led2_dev;
+    config.controller_uart_dev = controllerUart;
+    config.referee_uart_dev = refUartDev;
     static Infantry infantry(config);
+
+
+
 
     infantry.main_loop();
     // // blocking

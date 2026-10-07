@@ -1,3 +1,33 @@
+// Something to consider is what the diff is between using either of these clocks
+
+// &clk_hsi {
+//     status = "okay";
+// };
+
+// &clk_hse {
+//     status = "disabled";
+// };
+
+// &pll {
+//     clocks = <&clk_hsi>;
+//     div-m = <16>;
+//     mul-n = <384>;
+//     div-p = <4>;
+//     status = "okay";
+// };
+
+&clk_hse { status = "okay"; };
+&clk_hsi { status = "disabled"; };
+&pll { clocks = <&clk_hse>; };
+
+&dma1 {
+    status = "disabled";
+};
+
+&dma2 {
+    status = "okay";
+};
+
 &i2c1 {
     pinctrl-0 = <&i2c1_scl_pb8 &i2c1_sda_pb7>;
     pinctrl-names = "default";
@@ -29,6 +59,9 @@
     pinctrl-names = "default";
     status = "okay";
     current-speed = <921600>;
+
+    dmas = <&dma2 2 4 STM32_DMA_PERIPH_RX STM32_DMA_FIFO_FULL>;
+        dma-names = "rx";
 };
 
 &usart3 { //Ref

@@ -95,7 +95,7 @@ class Jetson {
 
     mode jetsonMode;
 
-    static constexpr unsigned long WRITE_THREAD_LOOP_DT_MS = 1;
+    static constexpr unsigned long WRITE_THREAD_LOOP_DT_MS = 2;
 };
 
 // ------

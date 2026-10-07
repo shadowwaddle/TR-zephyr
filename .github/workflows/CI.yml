@@ -1,0 +1,37 @@
+# .github/workflows/ci.yml
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true          # one robot failing doesn't cancel the others
+      matrix:
+        robot: [hero, infantry, sentry, testbench]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+
+      - name: Set up Zephyr (west, workspace, SDK)
+        uses: zephyrproject-rtos/action-zephyr-setup@v1
+        with:
+          app-path: app
+          toolchains: arm-zephyr-eabi
+          # sdk-version: match whatever you use locally
+
+      - name: Build ${{ matrix.robot }}
+        working-directory: app
+        run: make ${{ matrix.robot }}-build-clean
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.robot }}-firmware
+          path: app/build/*/zephyr/zephyr.*

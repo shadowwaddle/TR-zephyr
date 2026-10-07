@@ -91,38 +91,38 @@ float ChassisSubsystem::limitAcceleration(float desiredRPM, float previousRPM, i
     }
 }
 
-double ChassisSubsystem::p_theory(int LeftFrontPower, int RightFrontPower, int LeftBackPower, int RightBackPower, int LeftFrontRpm, int RightFrontRpm, int LeftBackRpm, int RightBackRpm){
-    double krpm2 = 0.000000000616869908524917;
-    double kpwr2 = 2.8873053310419543e-26;
-    double kboth = 0.00000000679867734389254;
-    double a = 0.019247609510979;
+float ChassisSubsystem::p_theory(int LeftFrontPower, int RightFrontPower, int LeftBackPower, int RightBackPower, int LeftFrontRpm, int RightFrontRpm, int LeftBackRpm, int RightBackRpm){
+    float krpm2 = 0.000000000616869908524917;
+    float kpwr2 = 2.8873053310419543e-26;
+    float kboth = 0.00000000679867734389254;
+    float a = 0.019247609510979;
 
 
-    double p1 =  (kboth * LeftFrontPower * LeftFrontRpm) +  (krpm2 * LeftFrontRpm * LeftFrontRpm) +  (kpwr2 * LeftFrontPower * LeftFrontPower) + a;
-    double p2 =  (kboth * RightFrontPower * RightFrontRpm) +  (krpm2 * RightFrontRpm * RightFrontRpm) +  (kpwr2 * RightFrontPower * RightFrontPower) + a;
-    double p3 =  (kboth * LeftBackPower * LeftBackRpm) +  (krpm2 * LeftBackRpm * LeftBackRpm) +  (kpwr2 * LeftBackPower * LeftBackPower) + a;
-    double p4 =  (kboth * RightBackPower * RightBackRpm) +  (krpm2 * RightBackRpm * RightBackRpm) +  (kpwr2 * RightBackPower * RightBackPower) + a;
+    float p1 =  (kboth * LeftFrontPower * LeftFrontRpm) +  (krpm2 * LeftFrontRpm * LeftFrontRpm) +  (kpwr2 * LeftFrontPower * LeftFrontPower) + a;
+    float p2 =  (kboth * RightFrontPower * RightFrontRpm) +  (krpm2 * RightFrontRpm * RightFrontRpm) +  (kpwr2 * RightFrontPower * RightFrontPower) + a;
+    float p3 =  (kboth * LeftBackPower * LeftBackRpm) +  (krpm2 * LeftBackRpm * LeftBackRpm) +  (kpwr2 * LeftBackPower * LeftBackPower) + a;
+    float p4 =  (kboth * RightBackPower * RightBackRpm) +  (krpm2 * RightBackRpm * RightBackRpm) +  (kpwr2 * RightBackPower * RightBackPower) + a;
     
-    double p_tot = p1 + p2 + p3 + p4; 
+    float p_tot = p1 + p2 + p3 + p4; 
 
-    double A = 224.9;
-    double B = 215.8;
-    double C = 0.7955;
+    float A = 224.9;
+    float B = 215.8;
+    float C = 0.7955;
 
-    double p_tot_c = (A * p_tot * p_tot) + (B * p_tot) + C;
+    float p_tot_c = (A * p_tot * p_tot) + (B * p_tot) + C;
 
     return p_tot_c;
 }
 
-double ChassisSubsystem::Bisection(int LeftFrontPower, int RightFrontPower, int LeftBackPower, int RightBackPower, int LeftFrontRpm, int RightFrontRpm, int LeftBackRpm, int RightBackRpm, double chassisPowerLimit) {
-    double scale = 0.5; // initial scale
-    double precision = 0.25; // initial precision
-    double powerInit = p_theory(LeftFrontPower, RightFrontPower, LeftBackPower, RightBackPower, LeftFrontRpm, RightFrontRpm, LeftBackRpm, RightBackRpm);
+float ChassisSubsystem::Bisection(int LeftFrontPower, int RightFrontPower, int LeftBackPower, int RightBackPower, int LeftFrontRpm, int RightFrontRpm, int LeftBackRpm, int RightBackRpm, float chassisPowerLimit) {
+    float scale = 0.5; // initial scale
+    float precision = 0.25; // initial precision
+    float powerInit = p_theory(LeftFrontPower, RightFrontPower, LeftBackPower, RightBackPower, LeftFrontRpm, RightFrontRpm, LeftBackRpm, RightBackRpm);
 
 
     if (powerInit > chassisPowerLimit) {
 
-        double powerScaled = p_theory(LeftFrontPower*scale, RightFrontPower*scale, LeftBackPower*scale, RightBackPower*scale, LeftFrontRpm, RightFrontRpm, LeftBackRpm, RightBackRpm);
+        float powerScaled = p_theory(LeftFrontPower*scale, RightFrontPower*scale, LeftBackPower*scale, RightBackPower*scale, LeftFrontRpm, RightFrontRpm, LeftBackRpm, RightBackRpm);
         
         for (int i = 0; i < 6; i++) {
             
@@ -212,24 +212,24 @@ float ChassisSubsystem::setWheelSpeeds(WheelSpeeds wheelSpeeds)
     previousRPM[2] = LBrpm;
     previousRPM[3] = RBrpm;
 
+    // Seems to be somewhat  redundant to do PID twice; HOWEVER, we should profile exactly how long the limit acceleration takes
 
-    
-
-    powers[0] = motorPIDtoPower(LEFT_FRONT,LFrpm, (time - lastPIDTime));
-    powers[1] = motorPIDtoPower(RIGHT_FRONT,RFrpm, (time - lastPIDTime));
-    powers[2] = motorPIDtoPower(LEFT_BACK,LBrpm, (time - lastPIDTime));
-    powers[3] = motorPIDtoPower(RIGHT_BACK,RBrpm, (time - lastPIDTime));
-    lastPIDTime = time;
+    // powers[0] = motorPIDtoPower(LEFT_FRONT,LFrpm, (time - lastPIDTime));
+    // powers[1] = motorPIDtoPower(RIGHT_FRONT,RFrpm, (time - lastPIDTime));
+    // powers[2] = motorPIDtoPower(LEFT_BACK,LBrpm, (time - lastPIDTime));
+    // powers[3] = motorPIDtoPower(RIGHT_BACK,RBrpm, (time - lastPIDTime));
+    // lastPIDTime = time;
 
     int p1 = abs(powers[0]);
     int p2 = abs(powers[1]);
     int p3 = abs(powers[2]);
     int p4 = abs(powers[3]);
 
-    int r1 = fabs(getMotorSpeed(MotorLocation::LEFT_FRONT, RPM));
-    int r2 = fabs(getMotorSpeed(MotorLocation::RIGHT_FRONT, RPM));
-    int r3 = fabs(getMotorSpeed(MotorLocation::LEFT_BACK, RPM));
-    int r4 = fabs(getMotorSpeed(MotorLocation::RIGHT_BACK, RPM));
+    // Ignore Warning, we're casting to ints anyway so its fine
+    int r1 = abs(getMotorSpeed(MotorLocation::LEFT_FRONT, RPM));
+    int r2 = abs(getMotorSpeed(MotorLocation::RIGHT_FRONT, RPM));
+    int r3 = abs(getMotorSpeed(MotorLocation::LEFT_BACK, RPM));
+    int r4 = abs(getMotorSpeed(MotorLocation::RIGHT_BACK, RPM));
 
     float totalEstimatedWatts = estimatePowerWatts(LF.getData(TORQUE))
                                + estimatePowerWatts(RF.getData(TORQUE))
@@ -245,25 +245,25 @@ float ChassisSubsystem::setWheelSpeeds(WheelSpeeds wheelSpeeds)
     LB.setPower(powers[2]*scale);
     RB.setPower(powers[3]*scale);
 
-    p1 = fabs(LF.getData(POWEROUT));
-    p2 = fabs(RF.getData(POWEROUT));
-    p3 = fabs(LB.getData(POWEROUT));
-    p4 = fabs(RB.getData(POWEROUT));
+    p1 = fabsf(LF.getData(POWEROUT));
+    p2 = fabsf(RF.getData(POWEROUT));
+    p3 = fabsf(LB.getData(POWEROUT));
+    p4 = fabsf(RB.getData(POWEROUT));
 
     return scale;
 }
 
 WheelSpeeds ChassisSubsystem::normalizeWheelSpeeds(WheelSpeeds wheelSpeeds) const
 {
-    double speeds[4] = {wheelSpeeds.LF, wheelSpeeds.RF, wheelSpeeds.LB, wheelSpeeds.RB};
-    double max_speed = m_OmniKinematicsLimits.max_Vel;
+    float speeds[4] = {wheelSpeeds.LF, wheelSpeeds.RF, wheelSpeeds.LB, wheelSpeeds.RB};
+    float max_speed = m_OmniKinematicsLimits.max_Vel;
 
-    for (double speed : speeds)
+    for (float speed : speeds)
         if (speed > max_speed)
             max_speed = speed;
 
     if (max_speed > m_OmniKinematicsLimits.max_Vel)
-        for (double &speed : speeds)
+        for (float &speed : speeds)
             speed = speed / max_speed * m_OmniKinematicsLimits.max_Vel;
 
     return {speeds[0], speeds[1], speeds[2], speeds[3]};
@@ -285,26 +285,26 @@ ChassisSpeeds ChassisSubsystem::getChassisSpeeds() const
 
 float ChassisSubsystem::setChassisSpeeds(ChassisSpeeds desiredChassisSpeeds_, DRIVE_MODE mode)
 {
-    double yawCurrent = 0;
+    float yawCurrent = 0;
     if (mode == REVERSE_YAW_ORIENTED)
     {
         yawCurrent = encoder->encoderMovingAverage();
-        if (yawCurrent < 0.0) {
-            yawCurrent += 360.0;
+        if (yawCurrent < 0.0f) {
+            yawCurrent += 360.0f;
         }
-        else if (yawCurrent > 360.0) {
-            yawCurrent -= 360.0;
+        else if (yawCurrent > 360.0f) {
+            yawCurrent -= 360.0f;
         }
         desiredChassisSpeeds = rotateChassisSpeed(desiredChassisSpeeds_, yawCurrent);
     }
     else if (mode == YAW_ORIENTED)
     {
         yawCurrent = encoder->encoderMovingAverage();
-        if (yawCurrent < 0.0) {
-            yawCurrent += 360.0;
+        if (yawCurrent < 0.0f) {
+            yawCurrent += 360.0f;
         }
-        else if (yawCurrent > 360.0) {
-            yawCurrent -= 360.0;
+        else if (yawCurrent > 360.0f) {
+            yawCurrent -= 360.0f;
         }
         desiredChassisSpeeds = rotateChassisSpeed(desiredChassisSpeeds_, yawCurrent);
     }
@@ -315,37 +315,37 @@ float ChassisSubsystem::setChassisSpeeds(ChassisSpeeds desiredChassisSpeeds_, DR
     else if (mode == ODOM_ORIENTED) 
     {
         yawCurrent = encoder->encoderMovingAverage();
-        if (yawCurrent < 0.0) {
-            yawCurrent += 360.0;
+        if (yawCurrent < 0.0f) {
+            yawCurrent += 360.0f;
         }
-        else if (yawCurrent > 360.0) {
-            yawCurrent -= 360.0;
+        else if (yawCurrent > 360.0f) {
+            yawCurrent -= 360.0f;
         }
 
-        double yawDelta = yawOdom - yawCurrent;
-        double imuDelta = imuOdom - imuAngles.yaw;
-        double delta = imuDelta - yawDelta;
-        double del = yawOdom + delta;
-        while (del > 360.0) del -= 360;
+        float yawDelta = yawOdom - yawCurrent;
+        float imuDelta = imuOdom - imuAngles.yaw;
+        float delta = imuDelta - yawDelta;
+        float del = yawOdom + delta;
+        while (del > 360.0f) del -= 360;
         while (del < 0) del += 360;
         desiredChassisSpeeds = rotateChassisSpeed(desiredChassisSpeeds_, yawOdom + delta);
     }
     else if (mode == YAW_ALIGN)
     {
         yawCurrent = encoder->encoderMovingAverage();
-        if (yawCurrent < 0.0) {
-            yawCurrent += 360.0;
+        if (yawCurrent < 0.0f) {
+            yawCurrent += 360.0f;
         }
-        else if (yawCurrent > 360.0) {
-            yawCurrent -= 360.0;
+        else if (yawCurrent > 360.0f) {
+            yawCurrent -= 360.0f;
         }
 
         // Compute yaw error(how much the yaw needs to recorrect)
-        double yawError = (yawCurrent - yawPhase);
+        float yawError = (yawCurrent - yawPhase);
         while (yawError > 180) yawError -= 360;
         while (yawError < -180) yawError += 360;
         
-        if (fabs(yawError) < 5) yawError = 0;
+        if (fabsf(yawError) < 5) yawError = 0;
 
         if (yawError > 90) yawError -= 180;
         else if (yawError < -90) yawError += 180;
@@ -355,7 +355,7 @@ float ChassisSubsystem::setChassisSpeeds(ChassisSpeeds desiredChassisSpeeds_, DR
         pid_align.feedForward = yaw_velo * yaw_velo_gain;
         float omegaCmd = pid_align.calculatePeriodic(yawError, 1000) * deg2rad;
 
-        if (fabs(omegaCmd) < 0.1) omegaCmd = 0;
+        if (fabsf(omegaCmd) < 0.1f) omegaCmd = 0;
 
         ChassisSpeeds xAlignSpeeds = {desiredChassisSpeeds_.vX, desiredChassisSpeeds_.vY, omegaCmd};
         desiredChassisSpeeds = rotateChassisSpeed(xAlignSpeeds, yawCurrent);
@@ -374,12 +374,12 @@ float ChassisSubsystem::setChassisSpeeds(ChassisSpeeds desiredChassisSpeeds_, DR
  * Power (is not PWM voltage) saturates your motor speeds, and it's not related to motor speed. 
  */
 
-ChassisSpeeds ChassisSubsystem::rotateChassisSpeed(ChassisSpeeds speeds, double yawCurrent)
+ChassisSpeeds ChassisSubsystem::rotateChassisSpeed(ChassisSpeeds speeds, float yawCurrent)
 {
     // rotate angle counter clockwise
-    double theta = (yawCurrent - yawPhase) / 180 * PI;
-    return {speeds.vX * cos(theta) - speeds.vY * sin(theta),
-            speeds.vX * sin(theta) + speeds.vY * cos(theta),
+    float theta = (yawCurrent - yawPhase) / 180 * PI;
+    return {speeds.vX * cosf(theta) - speeds.vY * sinf(theta),
+            speeds.vX * sinf(theta) + speeds.vY * cosf(theta),
             speeds.vOmega};
 }
 
@@ -406,12 +406,12 @@ void ChassisSubsystem::setMotorSpeedPID(MotorLocation location, float kP, float 
     getMotor(location).setSpeedPID(kP, kI, kD);
 }
 
-void ChassisSubsystem::setSpeedIntegralCap(MotorLocation location, double cap)
+void ChassisSubsystem::setSpeedIntegralCap(MotorLocation location, float cap)
 {
     getMotor(location).setSpeedIntegralCap(cap);
 }
 
-void ChassisSubsystem::setSpeedFeedforward(MotorLocation location, double FF)
+void ChassisSubsystem::setSpeedFeedforward(MotorLocation location, float FF)
 {
     // getMotor(location).pidSpeed.feedForward = FF * INT15_T_MAX;
     if(location == LEFT_FRONT){
@@ -442,9 +442,9 @@ void ChassisSubsystem::initializeImu()
     // imu.set_mounting_position(MT_P1);
 }
 
-double ChassisSubsystem::getMotorSpeed(MotorLocation location, SPEED_UNIT unit = RPM)
+float ChassisSubsystem::getMotorSpeed(MotorLocation location, SPEED_UNIT unit = RPM)
 {
-    double speed = getMotor(location).getData(VELOCITY);
+    float speed = getMotor(location).getData(VELOCITY);
     switch (unit)
     {
     case RPM:
@@ -477,12 +477,12 @@ void ChassisSubsystem::periodic(IMU::EulerAngles *imuCurr)
 
 
 // Moved to general functions
-// double ChassisSubsystem::degreesToRadians(double degrees)
+// float ChassisSubsystem::degreesToRadians(float degrees)
 // {
 //     return degrees * PI / 180.0;
 // }
 
-// double ChassisSubsystem::radiansToDegrees(double radians)
+// float ChassisSubsystem::radiansToDegrees(float radians)
 // {
 //     return radians / PI * 180.0;
 // }
@@ -492,7 +492,7 @@ int ChassisSubsystem::getHeadingDegrees() const
     return (int)imuAngles.yaw;
 }
 
-void ChassisSubsystem::setOmniKinematicsLimits(double max_Vel, double max_vOmega)
+void ChassisSubsystem::setOmniKinematicsLimits(float max_Vel, float max_vOmega)
 {
     m_OmniKinematicsLimits.max_Vel = max_Vel;
     m_OmniKinematicsLimits.max_vOmega = max_vOmega;
@@ -500,7 +500,7 @@ void ChassisSubsystem::setOmniKinematicsLimits(double max_Vel, double max_vOmega
 
 //NEW STUFF FROM THIS PAPER: https://research.ijcaonline.org/volume113/number3/pxc3901586.pdf
 
-// void ChassisSubsystem::setOmniKinematics(double radius)
+// void ChassisSubsystem::setOmniKinematics(float radius)
 // {
 //     float SQRT_2 = sqrt(2);
 //     m_OmniKinematics.r1x = -sqrt(radius);
@@ -516,11 +516,11 @@ void ChassisSubsystem::setOmniKinematicsLimits(double max_Vel, double max_vOmega
 //     m_OmniKinematics.r4y = -sqrt(radius);
 // }
 
-void ChassisSubsystem::setOmniKinematics(double radius, HOLONOMIC_MODE mode)
+void ChassisSubsystem::setOmniKinematics(float radius, HOLONOMIC_MODE mode)
 {
     if (mode == OMNI) {
 
-        double SQRT_2 = sqrt(2);
+        float SQRT_2 = sqrt(2);
         
         m_OmniKinematics.r1x = radius/SQRT_2;
         m_OmniKinematics.r1y = radius/SQRT_2;
@@ -582,7 +582,7 @@ WheelSpeeds ChassisSubsystem::chassisSpeedsToWheelSpeeds(ChassisSpeeds chassisSp
 
 ChassisSpeeds ChassisSubsystem::wheelSpeedsToChassisSpeeds(WheelSpeeds wheelSpeeds)
 {
-    float dist = chassis_radius/sqrt(2);
+    float dist = chassis_radius/sqrtf(2);
     float vX = (wheelSpeeds.LF + wheelSpeeds.RF - wheelSpeeds.LB - wheelSpeeds.RB) / 4;
     float vY = (wheelSpeeds.LF - wheelSpeeds.RF + wheelSpeeds.LB - wheelSpeeds.RB) / 4;
     float vOmega = (-wheelSpeeds.LF - wheelSpeeds.RF - wheelSpeeds.LB - wheelSpeeds.RB) / (4*(2 * dist));
@@ -590,7 +590,7 @@ ChassisSpeeds ChassisSubsystem::wheelSpeedsToChassisSpeeds(WheelSpeeds wheelSpee
 }
 
 
-void ChassisSubsystem::setMotorPower(MotorLocation location, double power)
+void ChassisSubsystem::setMotorPower(MotorLocation location, float power)
 {
     if (brakeMode == BRAKE && power == 0) // Should be BRAKE
     {
@@ -601,7 +601,7 @@ void ChassisSubsystem::setMotorPower(MotorLocation location, double power)
     getMotor(location).setPower(power * INT15_T_MAX);
 }
 
-void ChassisSubsystem::setMotorSpeedRPM(MotorLocation location, double speed)
+void ChassisSubsystem::setMotorSpeedRPM(MotorLocation location, float speed)
 {
     if (brakeMode == COAST && speed == 0)
     {
@@ -610,11 +610,11 @@ void ChassisSubsystem::setMotorSpeedRPM(MotorLocation location, double speed)
         return;
     }
     getMotor(location).setSpeed(speed);
-    double sgn_speed = speed / fabs(speed); // if speed is 0, it won't execute this line
+    float sgn_speed = speed / fabsf(speed); // if speed is 0, it won't execute this line
     setSpeedFeedforward(location, FF_Ks * sgn_speed);
 }
 
-int ChassisSubsystem::motorPIDtoPower(MotorLocation location, double speed, uint32_t dt)
+int ChassisSubsystem::motorPIDtoPower(MotorLocation location, float speed, uint32_t dt)
 {
     if (brakeMode == COAST && speed == 0)
     {
@@ -632,19 +632,19 @@ int ChassisSubsystem::motorPIDtoPower(MotorLocation location, double speed, uint
         setSpeedFeedforward(location, 0);
         return power;
     }
-    double sgn_speed = speed / fabs(speed); // if speed is 0, it won't execute this line
+    float sgn_speed = speed / fabsf(speed); // if speed is 0, it won't execute this line
     setSpeedFeedforward(location, FF_Ks * sgn_speed);
     return power;
 }
 
 
 bool ChassisSubsystem::setOdomReference() {
-    // yawOdom = -(1.0 - (double(yaw->getData(ANGLE)) / TICKS_REVOLUTION)) * 360.0;
+    // yawOdom = -(1.0 - (float(yaw->getData(ANGLE)) / TICKS_REVOLUTION)) * 360.0;
     imuOdom = imuAngles.yaw;
     return true;
 }
 
-// double ChassisSubsystem::getEncoderYawPosition() {
+// float ChassisSubsystem::getEncoderYawPosition() {
 //     if (encoder == nullptr) {
 //         return -1.0f;  // Encoder not available
 //     }
@@ -657,19 +657,19 @@ bool ChassisSubsystem::setOdomReference() {
 //     float duty_max = 0.97058f;   // 97.058%
 
 //     //low pass filter 
-//     double yaw_position = (double)(abs(((duty_raw - duty_min) / (duty_max - duty_min)) * 360.0));
+//     float yaw_position = (float)(abs(((duty_raw - duty_min) / (duty_max - duty_min)) * 360.0));
 //     filtered_yaw = filtered_yaw * (1.0f - filter_alpha) + yaw_position *  filter_alpha;
 //     // printf("%.2f\n",yaw_position);
 //     return filtered_yaw;
 // }
 
-// double ChassisSubsystem::encoderMovingAverage() {
+// float ChassisSubsystem::encoderMovingAverage() {
 //     const int windowSize = 20;
-//     static double readings[windowSize] = {0};
+//     static float readings[windowSize] = {0};
 //     static int index = 0;
 //     static bool filled = false;
 
-//     double newReading = getEncoderYawPosition();
+//     float newReading = getEncoderYawPosition();
 //     if (newReading < 0) {
 //         return -1.0f; // Encoder not available
 //     }
@@ -680,8 +680,8 @@ bool ChassisSubsystem::setOdomReference() {
 //         filled = true;
 //     }
 
-//     double sum = 0.0;
-//     double result = 0.0;
+//     float sum = 0.0;
+//     float result = 0.0;
 
 //     if (filled) {
 //         for (int i = 0; i < windowSize; i++) {
@@ -701,33 +701,33 @@ bool ChassisSubsystem::setOdomReference() {
 
 void ChassisSubsystem::updateYawPhaseFromEncoder() {
     float encoder_reading = 360 - encoder->encoderMovingAverage();
-        if (encoder_reading < 0.0) {
-            encoder_reading += 360.0;
+        if (encoder_reading < 0.0f) {
+            encoder_reading += 360.0f;
         }
-        else if (encoder_reading > 360.0) {
-            encoder_reading -= 360.0;
+        else if (encoder_reading > 360.0f) {
+            encoder_reading -= 360.0f;
         }
     if (encoder_reading >= 0) {
         yawPhase = encoder_reading;
     }
 }
 
-double ChassisSubsystem::radiansToTicks(double radians)
+float ChassisSubsystem::radiansToTicks(float radians)
 {
     return radians / (2 * PI) * TICKS_PER_ROTATION;
 }
 
-double ChassisSubsystem::ticksToRadians(double ticks)
+float ChassisSubsystem::ticksToRadians(float ticks)
 {
     return ticks / TICKS_PER_ROTATION * (2 * PI);
 }
 
-double ChassisSubsystem::rpmToRadPerSecond(double RPM)
+float ChassisSubsystem::rpmToRadPerSecond(float RPM)
 {
     return RPM * (2 * PI) / SECONDS_PER_MINUTE;
 }
 
-double ChassisSubsystem::radPerSecondToRPM(double radPerSecond)
+float ChassisSubsystem::radPerSecondToRPM(float radPerSecond)
 {
     return radPerSecond / (2 * PI) * SECONDS_PER_MINUTE;
 }

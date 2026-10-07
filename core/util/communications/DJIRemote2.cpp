@@ -87,7 +87,7 @@ bool verify_crc16_check_sum(uint8_t *p_msg, uint16_t len)
 }
 
 DJIRemote2::DJIRemote2(const struct device *uart_dev)
-    : uart_(uart_dev),
+    : serial_(uart_dev),
       streamCount_(0),
       validFrame_(false),
       lastFrameTimeUs_(0),
@@ -178,16 +178,16 @@ double DJIRemote2::getFrameRateHz() const
 
 void DJIRemote2::readIncomingBytes()
 {
-    uint8_t temp[32];
+    uint8_t temp[DMA_RX_RING_SIZE];
 
     size_t n = 0;
 
-    while (n < sizeof(temp)) {
-        uint8_t byte;
-        if (uart_poll_in(uart_, &byte) != 0) { // poll in returns 0 if byte is available, so if its not a zero, we don't care
+    while (n < sizeof(temp) && serial_.readable()) {
+        ssize_t got = serial_.read(&temp[n], sizeof(temp) - n);
+        if (got <= 0) {
             break;
-        } // We have a byte to read, so index to the next element of array
-        temp[n++] = byte;
+        }
+        n += static_cast<size_t>(got);
     }
 
     if (n == 0) {
@@ -359,7 +359,7 @@ void DJIRemote2::shiftLeft(size_t count)
 
 float DJIRemote2::apply_deadzone(float num) const{
     const float deadzone = 0.05;
-    if (num > deadzone) {
+    if (abs(num) > deadzone) {
         return num;
     }
     else {
@@ -456,3 +456,7 @@ bool DJIRemote2::getMouseR() const { return data_.mouseR; }
 bool DJIRemote2::keyPressed(Key key) const { return (data_.keyboard & (1 << (uint8_t)key)) != 0; }
 
 int16_t DJIRemote2::getWheel() const { return data_.mouseM; }
+
+void DJIRemote2::printMissedPackets() {
+    serial_.printMissedPackets();
+}

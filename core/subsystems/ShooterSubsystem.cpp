@@ -71,21 +71,21 @@ void ShooterSubsystem::setState(ShootState shoot_state)
 
 void ShooterSubsystem::periodic(int curr_heat, int heat_limit) 
 {
-    // These first 3 if statements do dedicated unjamming at start up
-    if (shooter_start_timer == 0) {
-        shooter_start_timer = now_us();
-    }
-    // My code is a lil funny but this statement runs after the 3rd if, it just "vomits" the ball out if stuck; I thought writing like this would make it slightly more optimized
-    if ((now_us() - shooter_start_timer) > 4000000 && (now_us() - shooter_start_timer) < 5000000) { // For first 4 seconds, reverse flywheels to prevent jamming
-        setFlywheels();
-        return;
-    }
-    // For first 4 seconds, the flywheels reverse so that the ball backs up. Be aware that the head should face down.
-    // If the head is facing up the ball isn't vomited out, and could re-jam if you turn the head down w/o shooting first
-    else if ((now_us() - shooter_start_timer) < 4000000) { 
-        reverseFlywheels();
-        return;
-    }
+    // // These first 3 if statements do dedicated unjamming at start up
+    // if (shooter_start_timer == 0) {
+    //     shooter_start_timer = now_us();
+    // }
+    // // My code is a lil funny but this statement runs after the 3rd if, it just "vomits" the ball out if stuck; I thought writing like this would make it slightly more optimized
+    // if ((now_us() - shooter_start_timer) > 4000000 && (now_us() - shooter_start_timer) < 5000000) { // For first 4 seconds, reverse flywheels to prevent jamming
+    //     setFlywheels();
+    //     return;
+    // }
+    // // For first 4 seconds, the flywheels reverse so that the ball backs up. Be aware that the head should face down.
+    // // If the head is facing up the ball isn't vomited out, and could re-jam if you turn the head down w/o shooting first
+    // else if ((now_us() - shooter_start_timer) < 4000000) { 
+    //     reverseFlywheels();
+    //     return;
+    // }
 
     barrel_heat = curr_heat;
     barrel_heat_limit = heat_limit;

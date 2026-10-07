@@ -4,8 +4,8 @@
 #include "zephyr/kernel.h"
 
 // If needed, these values could definitely be lowered, 1024 just seems like a safe option
-#define REFEREE_READ_STACK_SIZE  1024  
-#define REFEREE_WRITE_STACK_SIZE 1024
+#define REFEREE_READ_STACK_SIZE  4096
+#define REFEREE_WRITE_STACK_SIZE 4096
 #define THREAD_PRIORITY 8 // TODO: Figure out a better, more reasoned number
 
 K_THREAD_STACK_DEFINE(referee_read_stack, REFEREE_READ_STACK_SIZE);
@@ -572,10 +572,19 @@ void Referee::read()
     if(ref.readable())
     {
         int rad = JudgeSystem_USART_Receive_DMA();
-        mutex_read_.lock();
-        memcpy(JudgeSystem_rxBuff, JudgeSystem_rxBuff_priv, JUDGESYSTEM_PACKSIZE);
-        mutex_read_.unlock();
-        Judge_GetMessage(rad);
+if (rad <= 0 || rad > JUDGESYSTEM_PACKSIZE) {
+    if (enablePrintRefData) printf("[ERROR] bad ref read: %d\n", rad);
+    return; // or continue, depending on call site
+}
+mutex_read_.lock();
+memcpy(JudgeSystem_rxBuff, JudgeSystem_rxBuff_priv, JUDGESYSTEM_PACKSIZE);
+mutex_read_.unlock();
+Judge_GetMessage(static_cast<uint16_t>(rad));
+        // int rad = JudgeSystem_USART_Receive_DMA();
+        // mutex_read_.lock();
+        // memcpy(JudgeSystem_rxBuff, JudgeSystem_rxBuff_priv, JUDGESYSTEM_PACKSIZE);
+        // mutex_read_.unlock();
+        // Judge_GetMessage(rad);
 
         if(enablePrintRefData){
             std::string output = "robot id: %s  ";
@@ -605,22 +614,34 @@ void Referee::readThread()
         // read();
         if(ref.readable())
         {
+            // int rad = JudgeSystem_USART_Receive_DMA();
+            // mutex_read_.lock();
+            // memcpy(JudgeSystem_rxBuff, JudgeSystem_rxBuff_priv, JUDGESYSTEM_PACKSIZE);
+            // mutex_read_.unlock();
+            // Judge_GetMessage(rad);
             int rad = JudgeSystem_USART_Receive_DMA();
-            mutex_read_.lock();
-            memcpy(JudgeSystem_rxBuff, JudgeSystem_rxBuff_priv, JUDGESYSTEM_PACKSIZE);
-            mutex_read_.unlock();
-            Judge_GetMessage(rad);
 
-            if(enablePrintRefData){
-                std::string output = "robot id: %s  ";
+            if (rad > 0 && rad <= JUDGESYSTEM_PACKSIZE) {
+                mutex_read_.lock();
+                memcpy(JudgeSystem_rxBuff, JudgeSystem_rxBuff_priv, JUDGESYSTEM_PACKSIZE);
+                mutex_read_.unlock();
+                Judge_GetMessage(static_cast<uint16_t>(rad));
+    
+                if(enablePrintRefData){
+                    std::string output = "robot id: %s  ";
+    
+                    if(is_red_or_blue() == RED) {
+                        output += "RED  ";
+                    }
+                    else{
+                        output += "BLUE  ";
+                    }
+                    output += "robot hp: %d  max hp: %d  angle: %d  power: %d  current: %d  volt: %d \n";
+                }
+            }
 
-                if(is_red_or_blue() == RED) {
-                    output += "RED  ";
-                }
-                else{
-                    output += "BLUE  ";
-                }
-                output += "robot hp: %d  max hp: %d  angle: %d  power: %d  current: %d  volt: %d \n";
+            else  {
+                if (enablePrintRefData) printf("[ERROR] bad ref read: %d\n", rad);
             }
         }
         else{
@@ -629,7 +650,7 @@ void Referee::readThread()
             }
         }
 
-        k_yield();
+        k_sleep(K_MSEC(5));
     }
 }
 
@@ -654,25 +675,40 @@ void Referee::writeThread()
         [this](uint8_t *packet, uint16_t len) {referee_data_pack_handle(packet, len);}
     );
     mainUI.ui_init_g();
-    uint64_t last_ref_update = now_us();
+    // uint64_t last_ref_update = now_us();
 
+    bool was_connected = true;
     while(1)
     {
 
-        uint64_t curr_time = now_us();
-        if (ref.readable()) { 
-            // if ref has not been able to be read from for more than 1 sec 
-            // but ref can currently be read from, re-init everything
-            if(curr_time - last_ref_update > 1000000) {
-                mainUI.ui_reinit_g();
-            } 
-            last_ref_update = curr_time;
-        } else {
-            // If cannot read, then not connected in server
-            // which in that case do not need to try and send packets
-            k_yield();
-            continue;
+        uint32_t last = last_rx_ms;
+        bool connected = last != 0 && (k_uptime_get_32() - last) < 1000;
+
+        if (!connected) {
+            was_connected = false;
+            k_sleep(K_MSEC(100));
+        continue;
         }
+        if (!was_connected) {          // link came back after >1 s silence
+            mainUI.ui_reinit_g();
+            was_connected = true;
+        }
+
+
+        // uint64_t curr_time = now_us();
+        // if (ref.readable()) { 
+        //     // if ref has not been able to be read from for more than 1 sec 
+        //     // but ref can currently be read from, re-init everything
+        //     if(curr_time - last_ref_update > 1000000) {
+        //         mainUI.ui_reinit_g();
+        //     } 
+        //     last_ref_update = curr_time;
+        // } else {
+        //     // If cannot read, then not connected in server
+        //     // which in that case do not need to try and send packets
+        //     k_yield();
+        //     continue;
+        // }
 
         if (prev_is_spinning != is_spinning) {
             mainUI.set_spin_ui(is_spinning);
@@ -700,7 +736,8 @@ void Referee::writeThread()
             ui_dirty = false;
         }
 
-        k_yield();
+        // k_yield();
+        k_sleep(K_MSEC(33)); // We only get new data every 30Hz, so we wait 1/30th of a second
     }
 }
 

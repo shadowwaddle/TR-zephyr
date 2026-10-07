@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <cmath>
 
-#define PI 3.14159265
+#define PI 3.14159265f
 
 float calculateDeltaYaw(float curr_yaw, float des_yaw);
 
 float capAngle(float curr_angle);
 
-double degreesToRadians(double degrees);
+float degreesToRadians(float degrees);
 
-double radiansToDegrees(double radians);
+float radiansToDegrees(float radians);
 
 
 /**

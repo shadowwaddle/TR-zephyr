@@ -148,7 +148,7 @@ void TurretSubsystem::periodic(float chassisRpm)
         }
 
         int dir_p = forward_ * (des_pitch < turret_state.pitch_angle_degs ? -1 : 1);
-        pitch.pidSpeed.feedForward = (cos(pitch_current_radians) * pitch_gravity_feedforward) + (pitch_static_friction * dir_p + pitch_kinetic_friction * turret_state.pitch_velo_rad_s);
+        pitch.pidSpeed.feedForward = (cosf(pitch_current_radians) * pitch_gravity_feedforward) + (pitch_static_friction * dir_p + pitch_kinetic_friction * turret_state.pitch_velo_rad_s);
         float des_pitch_velo = pitch.pidPosition.calculate(
             forward_ * des_pitch, 
             forward_ * turret_state.pitch_angle_degs, 

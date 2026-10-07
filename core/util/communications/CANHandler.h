@@ -111,7 +111,7 @@ public:
 
 
 private:
-    static constexpr int RX_QUEUE_DEPTH = 16;
+    static constexpr int RX_QUEUE_DEPTH = 128;
 
     const struct device *dev_;
     int filter_id = -1;

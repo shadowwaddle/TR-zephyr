@@ -45,13 +45,13 @@ public:
      * Gets the yaw position from encoder (PWM) input in degrees (0-360)
      * @return yaw position in degrees, or -1 if encoder not available
      */
-    double getEncoderYawPosition();
+    float getEncoderYawPosition();
 
     /**
      * A helper method to calculate the moving average of the encoder readings for yaw position
      * @return the moving average of the encoder readings for yaw position
      */
-    double encoderMovingAverage();
+    float encoderMovingAverage();
     
 
 protected:
