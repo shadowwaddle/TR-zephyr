@@ -53,7 +53,7 @@ ISM330::ISM330(const struct spi_dt_spec &spi) noexcept : spi_(spi) {};
 int ISM330::writeReg(const uint8_t *cmd, size_t len) noexcept { // Should hopefully make the swap to SPI easier
     //i2c_write_dt(&i2c_, cmd, len);
     struct spi_buf buffer = {
-        .buf = const_cast<uint8_t *>(cmd), // some bs to treat const uint8_t* as a regular uint8_t*
+        .buf = cmd, 
         .len = len
     };
     struct spi_buf_set buffers = {

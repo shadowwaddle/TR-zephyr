@@ -15,10 +15,22 @@
 };
 
 &spi1 {
+    pinctrl-0 = <&spi1_miso_pb4 &spi1_mosi_pb5 &spi1_sck_pb3>;
+    pinctrl-names = "default";
+    status = "okay";
+    spi-max-frequency = <1000000>;
+
+    cs-gpios = <&gpioa 4 GPIO_ACTIVE_LOW>; // CS connected to pa 4?
+
     dmas = <&dma2 5 3 STM32_DMA_PERIPH_TX STM32_DMA_FIFO_FULL>,
            <&dma2 2 3 STM32_DMA_PERIPH_RX STM32_DMA_FIFO_FULL>;
 
     dma-names = "tx", "rx";
+
+    imu: ism330@6a {
+        compatible = "st,ism330dhcx";
+        reg = <0>;
+    }
 };
 
 &can1 {
