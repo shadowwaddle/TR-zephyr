@@ -94,6 +94,8 @@ public:
 
     ISM330_DATA_TypeDef readAG() noexcept;
 
+    // Register Getter
+    uint8_t getWhoAmI();
 
     // Temperature Reading
     float readTemperature() noexcept; // Returns temp in C-25, so at 25C it should read 0

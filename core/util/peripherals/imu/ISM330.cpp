@@ -45,57 +45,54 @@ static const uint8_t blockUpdate[] = {CTRL3_C, 0x44}; // Block update for readin
 
 
 // Constructor
-//ISM330::ISM330(const struct i2c_dt_spec &i2c) noexcept : i2c_(i2c) {}; // Just makes the i2c_ attribute store the i2c_dt_spec
 ISM330::ISM330(const struct spi_dt_spec &spi) noexcept : spi_(spi) {};
+
 // Helper functions
 
-
-int ISM330::writeReg(const uint8_t *cmd, size_t len) noexcept { // Should hopefully make the swap to SPI easier
-    //i2c_write_dt(&i2c_, cmd, len);
-    struct spi_buf buffer = {
-        .buf = cmd, 
-        .len = len
+int ISM330::writeReg(const uint8_t *cmd, size_t len) noexcept { 
+    struct spi_buf buffer = { 
+        .buf = const_cast<uint8_t*>(cmd), // Casting to non static type
+        .len = len // len bytes
     };
     struct spi_buf_set buffers = {
         .buffers = &buffer,
-        .count = 1
+        .count = 1 
     };
     return spi_write_dt(&spi_, &buffers); // returns 0 on success, <0 on failure
 }
 
 
 int ISM330::readReg(uint8_t reg, uint8_t *out, size_t len) noexcept {
-    //i2c_burst_read_dt(&i2c_, reg, out, len);
     uint8_t read_cmd = reg | 0x80; // forces highest bit to be 1, read mode
     struct spi_buf tx_bufs[] = {
         {
-            .buf = &read_cmd,
-            .len = 1
+            .buf = &read_cmd, // find desired register
+            .len = 1 // 1 byte
         },
         {
-            .buf = nullptr,
-            .len = len
+            .buf = nullptr, // sending 'nothing' when reading 
+            .len = len // len bytes
         }
     };
     struct spi_buf_set tx = {
         .buffers = tx_bufs,
-        .count = 2
+        .count = 2 
     };
     struct spi_buf rx_bufs[] = {
         {
-            .buf = nullptr,
-            .len = 1
+            .buf = nullptr, // read 'nothing' on first byte
+            .len = 1 // 1 byte
         },
         {
-            .buf = out,
-            .len = len
+            .buf = out, // store read info
+            .len = len // len bytes
         }
     };
     struct spi_buf_set rx = {
         .buffers = rx_bufs,
         .count = 2
     };
-    return spi_transceive_dt(&spi_, &tx, &rx);
+    return spi_transceive_dt(&spi_, &tx, &rx); // returns 0 on success, <0 on failure
 }
 
 // ------------------- INITIALIZATION -------------------
@@ -178,14 +175,11 @@ void ISM330::calibrate() noexcept
 
 
 // ------------------- BASIC DEBUG FUNCTIONS -------------------
-// uint8_t ISM330::whoAmI() noexcept
-// {
-//     i2c.write(writeAddr, WhoAmIReg, 1, false);
-//     char whoAmIReading;
-//     i2c.read(readAddr, reinterpret_cast<char*>(&whoAmIReading), 1, true);
-//     return whoAmIReading;
-
-// }
+uint8_t ISM330::getWhoAmI() {
+    uint8_t whoAmI = 0;
+    readReg(0x0F, &whoAmI, 1);
+    return whoAmI;
+}
 
 void ISM330::reset() noexcept
 {
