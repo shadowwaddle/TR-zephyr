@@ -1,0 +1,106 @@
+west build -b nucleo_f446re -p auto -d build/Testbench robots/Testbench
+[1/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/version.c.obj
+[2/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/system_work_q.c.obj
+[3/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/idle.c.obj
+[4/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/stack.c.obj
+[5/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/sem.c.obj
+[6/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/mailbox.c.obj
+[7/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/msg_q.c.obj
+[8/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/queue.c.obj
+[9/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/condvar.c.obj
+[10/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/timeslicing.c.obj
+[11/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/thread.c.obj
+[12/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/spinlock_validate.c.obj
+[13/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/pipe.c.obj
+[14/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/mutex.c.obj
+[15/54] Building C object zephyr/CMakeFiles/zephyr_pre0.dir/misc/empty_file.c.obj
+[16/54] Linking CXX static library core_build/libcore.a
+[17/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/timeout.c.obj
+[18/54] Linking C static library zephyr/arch/common/libarch__common.a
+[19/54] Linking CXX static library app/libapp.a
+[20/54] Building C object zephyr/drivers/spi/CMakeFiles/drivers__spi.dir/spi_ll_stm32.c.obj
+FAILED: [code=1] zephyr/drivers/spi/CMakeFiles/drivers__spi.dir/spi_ll_stm32.c.obj 
+/Users/shadowwaddle/zephyr-sdk-0.16.8/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc -DCORE_CM4 -DHSE_VALUE=8000000 -DKERNEL -DK_HEAP_MEM_POOL_SIZE=8192 -DPICOLIBC_DOUBLE_PRINTF_SCANF -DSTM32F446xx -DUSE_FULL_LL_DRIVER -DUSE_HAL_DRIVER -DZVFS_OPEN_SIZE=0 -D_POSIX_THREAD_SAFE_FUNCTIONS=200809L -D__LINUX_ERRNO_EXTENSIONS__ -D__PROGRAM_START -D__ZEPHYR_SUPERVISOR__ -D__ZEPHYR__=1 -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/build/Testbench/zephyr/include/generated/zephyr -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/build/Testbench/zephyr/include/generated -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/soc/st/stm32 -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/lib/libc/picolibc/include -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/lib/posix/c_lib_ext/getopt -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/lib/midi2/. -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/soc/st/stm32/common/. -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/drivers -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/soc/st/stm32/stm32f4x/. -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/modules/hal/cmsis_6/CMSIS/Core/Include -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/modules/cmsis_6/. -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/modules/hal/microchip/include -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/modules/hal/stm32/stm32cube/stm32f4xx/soc -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/modules/hal/stm32/stm32cube/stm32f4xx/drivers/include -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/modules/hal/stm32/stm32cube/common_ll/include -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/modules/hal/ti/mspm0/source/ti/devices/msp/. -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/modules/hal/ti/mspm0/source/ti/devices/msp/m0p -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/modules/hal/ti/mspm0/source/ti/devices/msp/peripherals -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/modules/hal/ti/mspm0/source/ti/devices/msp/peripherals/m0p -I/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/modules/hal/ti/mspm0/source/ti/devices/msp/peripherals/m0p/sysctl -isystem /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/lib/libc/common/include -Wshadow -fno-strict-aliasing -Os -imacros /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/build/Testbench/zephyr/include/generated/zephyr/autoconf.h -fno-common -g -gdwarf-4 -fdiagnostics-color=always -mcpu=cortex-m4 -mthumb -mabi=aapcs -mfp16-format=ieee -mtp=soft --sysroot=/Users/shadowwaddle/zephyr-sdk-0.16.8/arm-zephyr-eabi/arm-zephyr-eabi -imacros /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/toolchain/zephyr_stdint.h -Wall -Wformat -Wformat-security -Wno-format-zero-length -Wdouble-promotion -Wno-pointer-sign -Wpointer-arith -Wexpansion-to-defined -Wno-unused-but-set-variable -Werror=implicit-int -fno-pic -fno-pie -fno-asynchronous-unwind-tables -ftls-model=local-exec -fno-reorder-functions --param=min-pagesize=0 -fno-defer-pop -fmacro-prefix-map=/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/robots/Testbench=CMAKE_SOURCE_DIR -fmacro-prefix-map=/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr=ZEPHYR_BASE -fmacro-prefix-map=/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr=WEST_TOPDIR -ffunction-sections -fdata-sections -specs=picolibc.specs -std=c99 -MD -MT zephyr/drivers/spi/CMakeFiles/drivers__spi.dir/spi_ll_stm32.c.obj -MF zephyr/drivers/spi/CMakeFiles/drivers__spi.dir/spi_ll_stm32.c.obj.d -o zephyr/drivers/spi/CMakeFiles/drivers__spi.dir/spi_ll_stm32.c.obj -c /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/drivers/spi/spi_ll_stm32.c
+In file included from /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/util_macro.h:34,
+                 from /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/util.h:17,
+                 from /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/cbprintf_internal.h:15,
+                 from /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/cbprintf.h:124,
+                 from /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/logging/log_msg.h:11,
+                 from /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/logging/log_core.h:9,
+                 from /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/logging/log.h:11,
+                 from /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/drivers/spi/spi_ll_stm32.c:9:
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_72' undeclared here (not in a function); did you mean '__device_dts_ord_62'?
+   96 | #define DEVICE_NAME_GET(dev_id) _CONCAT(__device_, dev_id)
+      |                                         ^~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/util_internal.h:72:26: note: in definition of macro '__DEBRACKET'
+   72 | #define __DEBRACKET(...) __VA_ARGS__
+      |                          ^~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/util_internal.h:64:9: note: in expansion of macro '__GET_ARG2_DEBRACKET'
+   64 |         __GET_ARG2_DEBRACKET(one_or_two_args _if_code, _else_code)
+      |         ^~~~~~~~~~~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/util_internal.h:59:9: note: in expansion of macro '__COND_CODE'
+   59 |         __COND_CODE(_XXXX##_flag, _if_1_code, _else_code)
+      |         ^~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/util_macro.h:204:9: note: in expansion of macro 'Z_COND_CODE_1'
+  204 |         Z_COND_CODE_1(_flag, _if_1_code, _else_code)
+      |         ^~~~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/devicetree.h:5211:9: note: in expansion of macro 'COND_CODE_1'
+ 5211 |         COND_CODE_1(DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT),   \
+      |         ^~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/util_internal.h:69:53: note: in expansion of macro '__DEBRACKET'
+   69 | #define __GET_ARG2_DEBRACKET(ignore_this, val, ...) __DEBRACKET val
+      |                                                     ^~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/util_internal.h:64:9: note: in expansion of macro '__GET_ARG2_DEBRACKET'
+   64 |         __GET_ARG2_DEBRACKET(one_or_two_args _if_code, _else_code)
+      |         ^~~~~~~~~~~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/util_internal.h:59:9: note: in expansion of macro '__COND_CODE'
+   59 |         __COND_CODE(_XXXX##_flag, _if_1_code, _else_code)
+      |         ^~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/util_macro.h:204:9: note: in expansion of macro 'Z_COND_CODE_1'
+  204 |         Z_COND_CODE_1(_flag, _if_1_code, _else_code)
+      |         ^~~~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/drivers/spi/spi_ll_stm32.c:1733:17: note: in expansion of macro 'COND_CODE_1'
+ 1733 |                 COND_CODE_1(DT_INST_DMAS_HAS_NAME(id, dir),                     \
+      |                 ^~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/toolchain/common.h:169:23: note: in expansion of macro '_DO_CONCAT'
+  169 | #define _CONCAT(x, y) _DO_CONCAT(x, y)
+      |                       ^~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/device.h:96:33: note: in expansion of macro '_CONCAT'
+   96 | #define DEVICE_NAME_GET(dev_id) _CONCAT(__device_, dev_id)
+      |                                 ^~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/device.h:297:37: note: in expansion of macro 'DEVICE_NAME_GET'
+  297 | #define DEVICE_DT_NAME_GET(node_id) DEVICE_NAME_GET(Z_DEVICE_DT_DEV_ID(node_id))
+      |                                     ^~~~~~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/device.h:314:34: note: in expansion of macro 'DEVICE_DT_NAME_GET'
+  314 | #define DEVICE_DT_GET(node_id) (&DEVICE_DT_NAME_GET(node_id))
+      |                                  ^~~~~~~~~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/drivers/spi/spi_ll_stm32.c:1705:20: note: in expansion of macro 'DEVICE_DT_GET'
+ 1705 |         .dma_dev = DEVICE_DT_GET(STM32_DMA_CTLR(index, dir)),                   \
+      |                    ^~~~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/drivers/spi/spi_ll_stm32.c:1734:30: note: in expansion of macro 'SPI_DMA_CHANNEL_INIT'
+ 1734 |                             (SPI_DMA_CHANNEL_INIT(id, dir, DIR, src, dest)),    \
+      |                              ^~~~~~~~~~~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/drivers/spi/spi_ll_stm32.c:1781:17: note: in expansion of macro 'SPI_DMA_CHANNEL'
+ 1781 |                 SPI_DMA_CHANNEL(id, rx, RX, PERIPHERAL, MEMORY)                 \
+      |                 ^~~~~~~~~~~~~~~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/build/Testbench/zephyr/include/generated/zephyr/devicetree_generated.h:23536:53: note: in expansion of macro 'STM32_SPI_INIT'
+23536 | #define DT_FOREACH_OKAY_INST_st_stm32_spi(fn) fn(0) fn(1)
+      |                                                     ^~
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/include/zephyr/sys/util_internal.h:105:36: note: in expansion of macro 'DT_FOREACH_OKAY_INST_st_stm32_spi'
+  105 | #define UTIL_PRIMITIVE_CAT(a, ...) a##__VA_ARGS__
+      |                                    ^
+/Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/zephyr/drivers/spi/spi_ll_stm32.c:1799:1: note: in expansion of macro 'DT_INST_FOREACH_STATUS_OKAY'
+ 1799 | DT_INST_FOREACH_STATUS_OKAY(STM32_SPI_INIT)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+[21/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/dynamic_disabled.c.obj
+[22/54] Linking C static library zephyr/libzephyr.a
+[23/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/work.c.obj
+[24/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/timer.c.obj
+[25/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/mempool.c.obj
+[26/54] Linking C static library zephyr/arch/arch/arm/core/mpu/libarch__arm__core__mpu.a
+[27/54] Linking C static library zephyr/arch/arch/arm/core/libarch__arm__core.a
+[28/54] Linking C static library zephyr/arch/arch/arm/core/cortex_m/libarch__arm__core__cortex_m.a
+[29/54] Building C object zephyr/kernel/CMakeFiles/kernel.dir/sched.c.obj
+ninja: build stopped: subcommand failed.
+FATAL ERROR: command exited with status 1: /opt/homebrew/bin/cmake --build /Users/shadowwaddle/Projects/tritonRobotics/TR-zephyr/build/Testbench
+make: *** [testbench-build] Error 1

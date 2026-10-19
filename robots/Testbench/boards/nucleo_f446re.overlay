@@ -8,40 +8,48 @@
 	sda-gpios = <&gpiob 7 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 
 
-    // imu: ism330@6a {
-    //     compatible = "st,ism330dhcx";
-    //     reg = <0x6a>;
-    // };
+    // imu1: ism330@6a {
+    //      compatible = "st,ism330dhcx";
+    //      reg = <0x6a>;
+    //  };
 };
 
 &dma2 {
         status = "okay";
 };
 
-&spi1 {
-    pinctrl-0 = <&spi1_miso_pb4 &spi1_mosi_pb5 &spi1_sck_pb3>;
+&dma1 {
+    status = "okay";
+};
+
+&spi2 {
+    pinctrl-0 = <&spi2_sck_pb13
+                 &spi2_miso_pb14
+                 &spi2_mosi_pb15>;
     pinctrl-names = "default";
     status = "okay";
 
-    cs-gpios = <&gpioa 4 GPIO_ACTIVE_LOW>; // CS connected to pa 4?
+    cs-gpios =
+               <&gpiob 9 GPIO_ACTIVE_LOW>,
+               <&gpiob 4 GPIO_ACTIVE_LOW>;
 
 
-    dmas = <&dma2 5 3 STM32_DMA_PERIPH_TX STM32_DMA_FIFO_FULL>,
-           <&dma2 2 3 STM32_DMA_PERIPH_RX STM32_DMA_FIFO_FULL>;
+    dmas = <&dma1 4 0 STM32_DMA_PERIPH_TX STM32_DMA_FIFO_FULL>,
+       <&dma1 3 0 STM32_DMA_PERIPH_RX STM32_DMA_FIFO_FULL>;
 
     dma-names = "tx", "rx";
 
-    imu1: ism330@0 {
-        compatible = "st,ism330dhcx";
+    // testing with second nucleo and imu
+    mcu2: nucleo@0 {
+        compatible = "custom,spi-peripheral";
         reg = <0>;
+        spi-max-frequency = <10000000>;
+    };
+    imu1: ism330@1 {
+        compatible = "st,ism330dhcx";
+        reg = <1>;
         spi-max-frequency = <10000000>; // 10Mhz
     };
-    // For another potential imu, need to also add another cs-gpio pin
-    // imu2: ism330@1 {
-    //     compatible = "st,ism330dhcx";
-    //     reg = <1>;
-    //     spi-max-frequency = <10000000>; // 10Mhz
-    // };
 };
 
 &can1 {

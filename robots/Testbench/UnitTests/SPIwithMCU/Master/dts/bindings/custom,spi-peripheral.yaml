@@ -1,0 +1,3 @@
+description: Custom SPI peripheral (second STM32)
+compatible: "custom,spi-peripheral"
+include: spi-device.yaml

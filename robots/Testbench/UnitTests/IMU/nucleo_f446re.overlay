@@ -20,7 +20,7 @@
     status = "okay";
     spi-max-frequency = <1000000>;
 
-    cs-gpios = <&gpioa 4 GPIO_ACTIVE_LOW>; // CS connected to pa 4?
+    cs-gpios = <&gpioa 4 GPIO_ACTIVE_LOW>,; // CS connected to pa 4?
 
     dmas = <&dma2 5 3 STM32_DMA_PERIPH_TX STM32_DMA_FIFO_FULL>,
            <&dma2 2 3 STM32_DMA_PERIPH_RX STM32_DMA_FIFO_FULL>;
